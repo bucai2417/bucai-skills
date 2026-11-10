@@ -94,18 +94,20 @@ python tools/package_skill.py --check-only
 
 ### Release（推送 tag）
 
+本仓库按集合版本发版，tag 格式为 `v<集合版本>`：
+
 ```bash
-git tag secure-system-development-v1.2.2
-git push origin secure-system-development-v1.2.2
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 根目录 `.github/workflows/release.yml` 会：
 
-1. 解析 `<skill>-v<version>` tag，确认目录存在
-2. 校验 tag 与 `SKILL.md` 的 `version` 一致
+1. 校验 tag 形如 `vX.Y.Z`，且与根目录 `VERSION` 一致
+2. 校验全部 skill 的 `SKILL.md`
 3. 跑自测与自身扫描
-4. 打包
-5. 创建 GitHub Release，附带 `.skill`、`.zip` 与 Codex 插件包
+4. 构建包含全部 skill 的 `bucai-skills-<version>.zip` 与合并 Codex 插件包
+5. 创建 GitHub Release
 
 也可以手动触发：Actions → release → Run workflow，输入 tag。
 
@@ -160,5 +162,5 @@ python tools/package_skill.py --out dist
 | 装上后 agent 不触发 | `description` 太笼统 | 描述里写清使用场景，中英关键词都放 |
 | 解压后找不到 SKILL.md | 压缩时多套了一层目录 | 用 `tools/package_skill.py` |
 | Codex 识别不到 skill | `plugin.json` 的 `"skills"` 指向根目录 | 用 `dist/codex-plugin/` |
-| release 工作流失败 | tag 与 `SKILL.md` 的 `version` 不一致 | 改版本号或改 tag |
+| release 工作流失败 | tag 与根目录 `VERSION` 不一致 | 改 `VERSION` 或改 tag |
 | 中文输出乱码 | Windows 控制台 GBK | 脚本已强制 UTF-8；用编辑器看文件 |

@@ -211,33 +211,34 @@ python tools/make_icon.py
 
 ## 版本与发布
 
-- **版本号唯一来源**：`SKILL.md` 顶层的 `version` 字段
+- **skill 版本唯一来源**：`SKILL.md` 顶层的 `version` 字段
 - 查看当前版本：
 
 ```bash
 python tools/package_skill.py --src . --print-version
 ```
 
-- 本地打包（生成 `.skill`、`.zip`、Codex 插件包）：
+- 本地单独打包（生成 `.skill`、`.zip`、Codex 插件包）：
 
 ```bash
 python tools/package_skill.py --src . --out dist
 ```
 
-- 发布新版本（在 bucai-skills 仓库根目录）：
+- 随集合发布新版本（在 bucai-skills 仓库根目录）：
 
 ```bash
-# 1. 改 SKILL.md 的 version 与 CHANGELOG.md
-# 2. 提交
+# 1. 改本目录 SKILL.md 的 version 与 CHANGELOG.md
+# 2. 改根目录 VERSION（集合版本）
+# 3. 提交并打集合 tag
 git add -A
 git commit -m "feat: ..."
-# 3. 打 tag 并推送（自动触发根目录 release 工作流）
-git tag secure-system-development-v1.2.2
-git push origin secure-system-development-v1.2.2
+git tag v1.1.0
+git push origin main v1.1.0
 ```
 
-Release 工作流会：解析 `<skill>-v<version>` tag → 校验 tag 与 `SKILL.md` 版本一致 →
-跑扫描器自测 → 打包 → 创建 GitHub Release 并附上 `.skill`、`.zip` 与 Codex 插件包。
+Release 工作流会：校验 tag 与根目录 `VERSION` 一致 → 校验全部 skill →
+跑扫描器自测 → 构建包含全部 skill 的 `bucai-skills-<version>.zip` →
+创建 GitHub Release。单个 skill 的打包脚本仍可用于本地分发，但正式发布以集合包为准。
 
 更详细的发布说明见 [`docs/publishing.md`](docs/publishing.md)。
 

@@ -62,11 +62,17 @@ cp -r /tmp/bucai-skills/multi-bot-adapter ~/.Claud/skills/
 ~/.Claud/skills/multi-bot-adapter/SKILL.md
 ```
 
-### 方式三：下载单个技能包
+### 方式三：下载集合包
 
-到 [Releases](https://github.com/bucai2417/bucai-skills/releases) 下载对应 tag 的
-`.skill`（Claud / Claud Code）或 `.zip`（通用）。`.skill` 本质是 zip，解压后
-`SKILL.md` 必须在第一层。
+到 [Releases](https://github.com/bucai2417/bucai-skills/releases) 下载最新
+`bucai-skills-<version>.zip`。这个包包含全部 skill，解压后顶层直接是各技能目录：
+
+```bash
+unzip bucai-skills-1.0.0.zip -d ~/.Claud/skills
+```
+
+解压后确认结构为 `~/.Claud/skills/multi-bot-adapter/SKILL.md`。
+Codex 用户下载 `-codex-plugin.zip`，按插件方式安装。
 
 ### 各 agent 的安装位置
 
@@ -138,7 +144,9 @@ bucai-skills/
 ├── LICENSE                          # 仓库级 MIT（各 skill 保留自己的许可证）
 ├── install.sh                       # macOS / Linux / Git Bash 安装脚本
 ├── install.ps1                      # Windows PowerShell 安装脚本
-├── tools/package_skill.py           # 仓库统一打包/校验脚本
+├── VERSION                          # 集合版本（单一来源）
+├── tools/package_skill.py           # 单个 skill 的校验/打包
+├── tools/build_bundle.py            # 构建包含全部 skill 的集合包
 ├── .github/workflows/
 │   ├── ci.yml                       # 校验 + 打包全部 skill
 │   └── release.yml                  # 按 tag 打包单个 skill 并发 Release
@@ -170,31 +178,33 @@ bucai-skills/
 
 ## 版本与发布
 
-每个 skill 独立使用语义化版本，版本号写在 `SKILL.md` 的 `version` 字段，
-并与 `.codex-plugin/plugin.json`、`CHANGELOG.md` 保持一致。
+本仓库按「集合库」发版：一个版本对应一个包含全部 skill 的压缩包。
 
-发布标签格式：
-
-```text
-<skill-name>-v<version>
-```
-
-例如：
+- 集合版本号写在根目录 `VERSION`，例如 `1.0.0`；
+- 每个 skill 仍保留自己的版本（`SKILL.md` 的 `version`），互不影响；
+- 发布 tag 格式为 `v<集合版本>`，例如 `v1.0.0`。
 
 ```bash
-git tag multi-bot-adapter-v1.0.1
-git tag secure-system-development-v1.2.2
-git push origin --tags
+# 1. 修改 VERSION（以及各 skill 的版本/CHANGELOG）
+# 2. 提交
+git add -A
+git commit -m "chore: release v1.1.0"
+git push origin main
+# 3. 打 tag 触发发布
+git tag v1.1.0
+git push origin v1.1.0
 ```
 
 `release.yml` 会：
 
-1. 解析 tag，校验 `<skill-name>` 目录存在；
-2. 校验 tag 版本与 `SKILL.md` 的 `version` 完全一致，不一致直接失败；
-3. 运行该 skill 自己的打包脚本；
-4. 创建 GitHub Release，并上传 `.skill`、`.zip` 和 Codex 插件包。
+1. 校验 tag 形如 `vX.Y.Z`，且与 `VERSION` 一致；
+2. 校验全部 skill 的 frontmatter 与布局；
+3. 构建集合包 `bucai-skills-<version>.zip`（顶层即各技能目录）；
+4. 构建合并的 Codex 插件包 `bucai-skills-<version>-codex-plugin.zip`；
+5. 创建 GitHub Release，上传两个 zip 和 `sha256sums.txt`。
 
-仓库本身不提交 `dist/` 产物，需要的用户从 Releases 下载。
+仓库本身不提交 `dist/` 产物，用户统一从 Releases 下载。历史上按单 skill 发布的 tag
+（如 `multi-bot-adapter-v1.0.0`）仅作存档，不再触发新的发布流程。
 
 ---
 
@@ -221,17 +231,19 @@ git push origin --tags
    - `description` 要写清「什么时候用」，否则 agent 不会主动触发。
 
 4. 在根 `README.md` 的「技能目录」表格中补一行。
-5. 本地跑 `python tools/package_skill.py --src <name> --check-only`，通过后推送到 `main`。
-   `ci.yml` 会再次校验并构建，确认通过后再打 tag 发版。
+5. 本地跑 `python tools/build_bundle.py --check-only`，通过后推送到 `main`。
+   `ci.yml` 会再次校验并构建集合包；发版时同步修改根目录 `VERSION` 再打 `vX.Y.Z` tag。
 
 ---
 
 ## 本地校验
 
 ```bash
-# 校验 frontmatter 与包布局
-python tools/package_skill.py --src multi-bot-adapter --check-only
-python tools/package_skill.py --src secure-system-development --check-only
+# 校验集合与全部 skill
+python tools/build_bundle.py --check-only
+
+# 本地构建集合包（产物在 dist/）
+python tools/build_bundle.py --out dist
 
 # 安全 skill 自测 + 红线自查
 cd secure-system-development
@@ -239,8 +251,8 @@ python tests/test_scanner_rules.py
 python scripts/scan_redlines.py . --code-only --exclude tests --fail-on high
 ```
 
-全部通过再推送。CI 会重复执行同样的检查。仓库级 `tools/package_skill.py` 对两个 skill
-通用；新增 skill 也必须能被它校验和打包。
+全部通过再推送。CI 会重复执行同样的检查。`tools/build_bundle.py` 负责集合发版，
+`tools/package_skill.py` 只用于单独分发某个 skill。
 
 ---
 

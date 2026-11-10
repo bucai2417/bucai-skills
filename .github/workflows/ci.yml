@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   validate:
-    name: validate all skills
+    name: validate and bundle
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,17 +20,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Validate skill metadata and layout
-        run: |
-          set -euo pipefail
-          python tools/package_skill.py --src multi-bot-adapter --check-only
-          python tools/package_skill.py --src secure-system-development --check-only
-
-      - name: Build packages
-        run: |
-          set -euo pipefail
-          python tools/package_skill.py --src multi-bot-adapter --out "$RUNNER_TEMP/dist/multi-bot-adapter"
-          python tools/package_skill.py --src secure-system-development --out "$RUNNER_TEMP/dist/secure-system-development"
+      - name: Validate collection and skills
+        run: python tools/build_bundle.py --check-only
 
       - name: Secure skill self-test
         working-directory: secure-system-development
@@ -39,9 +30,12 @@ jobs:
           python tests/test_scanner_rules.py
           python scripts/scan_redlines.py . --code-only --exclude tests --fail-on high
 
-      - name: Upload packages
+      - name: Build combined bundle
+        run: python tools/build_bundle.py --out "$RUNNER_TEMP/dist"
+
+      - name: Upload bundle
         uses: actions/upload-artifact@v4
         with:
-          name: skill-packages
+          name: bucai-skills-bundle
           path: ${{ runner.temp }}/dist
           if-no-files-found: error

@@ -146,29 +146,29 @@ python scripts/package_skill.py --out dist
 
 ### 发布新版本
 
-1. 修改 `SKILL.md` 的 `version`，同步 `.codex-plugin/plugin.json` 与 `CHANGELOG.md`。
-2. 在 bucai-skills 仓库提交并推送：
+本 skill 随 bucai-skills 集合统一发版，一个 Release 包含全部 skill：
+
+1. 修改本目录 `SKILL.md` 的 `version`，同步 `.codex-plugin/plugin.json` 与 `CHANGELOG.md`。
+2. 修改根目录 `VERSION`（集合版本）。
+3. 提交并推送 `main`，然后打集合 tag：
    ```bash
    git add .
-   git commit -m "chore: release multi-bot-adapter v1.2.3"
+   git commit -m "chore: release v1.1.0"
    git push origin main
-   ```
-3. 打 tag 并推送，根目录工作流会自动校验并发布：
-   ```bash
-   git tag multi-bot-adapter-v1.2.3
-   git push origin multi-bot-adapter-v1.2.3
+   git tag v1.1.0
+   git push origin v1.1.0
    ```
 
 根目录工作流（[`.github/workflows/release.yml`](../.github/workflows/release.yml)）会：
 
-- 解析 `<skill>-v<version>` tag，确认目录存在
-- 校验 tag 与 `SKILL.md` 版本一致
-- 用根目录 `tools/package_skill.py` 构建 `.skill`、`.zip` 和 Codex 插件包
-- 创建或更新 GitHub Release，并把所有包作为 Release 资产
+- 校验 tag 与根目录 `VERSION` 一致
+- 校验全部 skill 的 frontmatter 与布局
+- 用 `tools/build_bundle.py` 构建 `bucai-skills-<version>.zip` 和合并的 Codex 插件包
+- 创建 GitHub Release，两个 zip 一起作为 Release 资产
 
 也可以手动触发：Actions → Release → Run workflow，填入已存在的 tag。
 
-> tag 与 `SKILL.md` 版本不一致时工作流会直接失败，避免发错版本。
+> 单个 skill 的 `scripts/package_skill.py` 仍可用于本地单独分发，但正式发布走集合包。
 
 ---
 
