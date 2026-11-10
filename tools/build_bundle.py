@@ -130,7 +130,7 @@ def build_bundle(out: Path, version: str, skills: list[Path]) -> list[Path]:
     plugin = {
         "name": "bucai-skills",
         "version": version,
-        "description": "Collection of agent skills: multi-channel bot adapters and secure system development.",
+        "description": "Collection of agent skills: multi-channel bot adapters, secure system development, and PDF data extraction.",
         "author": {"name": "bucai2417"},
         "license": "MIT",
         "homepage": "https://github.com/bucai2417/bucai-skills",
@@ -138,7 +138,7 @@ def build_bundle(out: Path, version: str, skills: list[Path]) -> list[Path]:
         "skills": "./skills/",
         "interface": {
             "displayName": "bucai-skills",
-            "shortDescription": "Multi-channel bot adapters and secure system development skills",
+            "shortDescription": "Multi-channel bot adapters, secure system development, and PDF data extraction skills",
             "developerName": "bucai2417",
             "category": "Developer Tools",
             "capabilities": ["Read", "Write"],

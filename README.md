@@ -1,6 +1,6 @@
 # bucai-skills
 
-![skills](https://img.shields.io/badge/skills-2-0EA5E9)
+![skills](https://img.shields.io/badge/skills-3-0EA5E9)
 ![license](https://img.shields.io/badge/license-see%20below-blue)
 ![ci](https://github.com/bucai2417/bucai-skills/actions/workflows/ci.yml/badge.svg)
 
@@ -16,8 +16,9 @@
 |---|---|---|---|
 | [multi-bot-adapter](multi-bot-adapter/) | 渠道通信 | 1.0.0 | QQ 官方 Bot 与微信 wxclaw / iLink Bot 的扫码登录、收发消息、富媒体、语音与协议排错 |
 | [secure-system-development](secure-system-development/) | 安全与工程 | 1.2.1 | 网站、后端与 API 的安全红线：认证、注入、并发、异步、防篡改、CORS、404 与收录 |
+| [pdf-data](pdf-data/) | 文档处理 | 1.0.0 | 用 Python 只读解析 PDF，输出结构化 JSON 与阅读顺序 Markdown：文本、版面、表格、链接、元数据、目录、表单、图片（不 OCR） |
 
-两个 skill 都支持中英双语描述，可被 Claud / Claud Code、Codex 以及通用 Agent Skills 加载。
+三个 skill 都支持中英双语描述，可被 Claud / Claud Code、Codex 以及通用 Agent Skills 加载。
 
 ---
 
@@ -95,6 +96,7 @@ Codex 用户下载 `-codex-plugin.zip`，按插件方式安装。
 ```text
 $multi-bot-adapter 按适配器契约接入这个新渠道，并给出测试清单
 $secure-system-development 按红线清单检查这个登录接口和建表语句
+$pdf-data 读取这份 PDF 简历，输出 Markdown 结构并从 JSON 提取字段
 ```
 
 ### multi-bot-adapter
@@ -134,6 +136,27 @@ python secure-system-development/scripts/scan_redlines.py <目标目录> --fail-
 
 完整说明见 [secure-system-development/README.md](secure-system-development/README.md)。
 
+### pdf-data
+
+**什么时候会自动触发**：读取、解析、提取 PDF 文本/表格/元数据/目录/链接/表单，
+PDF 转 Markdown/JSON，处理 PDF 简历、合同、报告，或批量解析 PDF 文档时。
+
+**示例请求**：
+
+- 「读取这份 PDF 简历，提取姓名、联系方式和经历」
+- 「把这个 PDF 转成 Markdown 和 JSON，列出所有表格」
+- 「检查这个 PDF 的元数据、目录和链接」
+- 「批量解析这个目录下的 PDF，每份输出 JSON」
+
+自带多引擎提取器（PyMuPDF + pdfplumber + pypdf），只读解析、不做 OCR：
+
+```bash
+python pdf-data/scripts/extract.py 简历.pdf --out-dir out --format both
+python pdf-data/tests/test_extract.py
+```
+
+完整说明见 [pdf-data/README.md](pdf-data/README.md)。
+
 ---
 
 ## 仓库结构
@@ -160,16 +183,29 @@ bucai-skills/
 │   ├── assets/                      # 图标
 │   ├── references/                  # QQ / wxclaw 全量协议与契约
 │   └── scripts/
-└── secure-system-development/       # skill 2：安全系统开发规范
+├── secure-system-development/       # skill 2：安全系统开发规范
     ├── SKILL.md
     ├── README.md
     ├── CHANGELOG.md
     ├── LICENSE                      # MIT
     ├── agents/openai.yaml
     ├── .codex-plugin/plugin.json
-    ├── assets/                      # 图标、威胁建模与评审模板
+    ├── assets/                      # 图标、威胁建模与模板
     ├── references/                  # 11 个专题文档
     ├── scripts/                     # scan_redlines.py
+    ├── tests/
+    └── tools/
+└── pdf-data/                        # skill 3：PDF 数据提取
+    ├── SKILL.md
+    ├── README.md
+    ├── CHANGELOG.md
+    ├── LICENSE                      # MIT
+    ├── AGENTS.md
+    ├── agents/openai.yaml
+    ├── .codex-plugin/plugin.json
+    ├── assets/                      # 图标
+    ├── references/                  # JSON schema、准确性与限制、常用做法
+    ├── scripts/                     # extract.py + pdfdata/
     ├── tests/
     └── tools/
 ```
@@ -261,6 +297,7 @@ python scripts/scan_redlines.py . --code-only --exclude tests --fail-on high
 - 仓库级文件（README、安装脚本、工作流）：MIT，见 [LICENSE](LICENSE)。
 - `multi-bot-adapter/`：Apache License 2.0，见 [其 LICENSE](multi-bot-adapter/LICENSE)。
 - `secure-system-development/`：MIT，见 [其 LICENSE](secure-system-development/LICENSE)。
+- `pdf-data/`：MIT，见 [其 LICENSE](pdf-data/LICENSE)。
 
 各 skill 目录内的许可证优先于仓库根许可证。
 

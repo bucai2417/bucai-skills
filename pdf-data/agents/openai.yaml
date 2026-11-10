@@ -1,0 +1,10 @@
+interface:
+  display_name: "PDF Data Extraction"
+  short_description: "读取 PDF 为结构化 JSON 与阅读顺序 Markdown（不 OCR）"
+  icon_small: "./assets/icon-512.png"
+  icon_large: "./assets/icon-512.png"
+  brand_color: "#2563EB"
+  default_prompt: "使用 $pdf-data 读取这份 PDF，先看 document.md 的整体结构，再从 document.json 提取所需字段、表格与元数据，并说明所有 warnings。"
+
+policy:
+  allow_implicit_invocation: true

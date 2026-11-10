@@ -1,0 +1,36 @@
+{
+  "name": "pdf-data",
+  "version": "1.0.0",
+  "description": "Read PDF files with Python and extract complete, accurate data into structured JSON plus reading-order Markdown: page text and layout, tables, links, metadata, outline, form fields, attachments, image metadata, and quality warnings. No OCR.",
+  "author": {
+    "name": "bucai2417"
+  },
+  "license": "MIT",
+  "keywords": [
+    "pdf",
+    "pdf-parsing",
+    "pdf-extraction",
+    "resume",
+    "document-analysis",
+    "table-extraction",
+    "pymupdf",
+    "pdfplumber",
+    "pypdf",
+    "markdown",
+    "json",
+    "metadata"
+  ],
+  "skills": "./",
+  "interface": {
+    "displayName": "PDF Data Extraction",
+    "shortDescription": "Read PDFs into structured JSON and reading-order Markdown",
+    "longDescription": "Extracts text in reading order, multi-column layout, tables, links, metadata, outline, form fields, attachments, and image metadata from PDF files using PyMuPDF, pdfplumber, and pypdf. Outputs a versioned JSON document plus clean Markdown, reports scanned pages and engine disagreements as quality warnings, and never modifies the input PDF. Designed for resumes, contracts, reports, and other documents; OCR is intentionally out of scope.",
+    "developerName": "bucai2417",
+    "category": "Document Processing",
+    "capabilities": ["Read"],
+    "defaultPrompt": [
+      "读取这份 PDF 简历，先给出 Markdown 结构，再从 JSON 中提取姓名、联系方式、教育和经历字段。",
+      "把这个 PDF 转成 Markdown 和 JSON，并列出所有表格与警告。"
+    ]
+  }
+}
