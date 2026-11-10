@@ -1,0 +1,10 @@
+interface:
+  display_name: "Secure System Development"
+  short_description: "安全与工程红线：认证、注入、并发、异步、防篡改、CORS、404 与收录"
+  icon_small: "./assets/icon-512.png"
+  icon_large: "./assets/icon-512.png"
+  brand_color: "#3B82F6"
+  default_prompt: "使用 $secure-system-development 按红线清单检查这个网站/后端/API 的设计与实现，先跑 scripts/scan_redlines.py，再逐条说明安全决策。"
+
+policy:
+  allow_implicit_invocation: true

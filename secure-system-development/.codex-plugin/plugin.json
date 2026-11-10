@@ -1,0 +1,48 @@
+{
+  "name": "secure-system-development",
+  "version": "1.2.1",
+  "description": "Security and engineering red lines for designing, writing, and reviewing websites, backend services, and APIs: hardened auth, injection prevention, business-logic and race-condition defense, high-concurrency database design, async-first architecture, API integrity and anti-tampering, secrets and operations, AI/LLM security, mobile and mini-program security, CORS and security headers, scenario-aware 404 and indexing rules.",
+  "author": {
+    "name": "bucai2417"
+  },
+  "homepage": "https://github.com/bucai2417/bucai-skills/tree/main/secure-system-development",
+  "repository": "https://github.com/bucai2417/bucai-skills",
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "web-security",
+    "backend",
+    "api",
+    "authentication",
+    "authorization",
+    "sql-injection",
+    "xss",
+    "csrf",
+    "ssrf",
+    "cors",
+    "rate-limiting",
+    "concurrency",
+    "idempotency",
+    "async",
+    "secrets-management",
+    "prompt-injection",
+    "mobile-security",
+    "mini-program",
+    "seo",
+    "owasp",
+    "asvs"
+  ],
+  "skills": "./",
+  "interface": {
+    "displayName": "Secure System Development",
+    "shortDescription": "Design and review websites, backends, and APIs without shipping the usual security holes",
+    "longDescription": "Applies security and engineering red lines across the full build cycle: threat modeling, hardened authentication and authorization, injection prevention, business-logic and race-condition defense, high-concurrency database design, async-first architecture with idempotent consumers, API integrity and anti-tampering, secrets and operations security, AI/LLM application security, mobile and mini-program security, CORS and security headers, and scenario-aware 404 and indexing rules. Includes an executable red-line scanner and review templates.",
+    "developerName": "secure-system-development contributors",
+    "category": "Developer Tools",
+    "capabilities": ["Read", "Write"],
+    "defaultPrompt": [
+      "Review this login endpoint and database schema against the security red lines.",
+      "Scan this project for security red-line violations and fix the high-severity findings."
+    ]
+  }
+}

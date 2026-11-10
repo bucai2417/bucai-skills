@@ -1,0 +1,84 @@
+name: release
+
+on:
+  push:
+    tags: ["*-v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, e.g. secure-system-development-v1.2.2"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}-${{ github.event.inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: build and publish one skill
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve skill and version
+        id: meta
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+        run: |
+          set -euo pipefail
+          TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
+          SKILL="${TAG%-v*}"
+          VERSION="${TAG##*-v}"
+
+          if [[ "$SKILL" == "$TAG" || "$VERSION" == "$TAG" ]]; then
+            echo "::error::Tag '$TAG' must look like <skill-name>-v<version>."
+            exit 1
+          fi
+          if [[ ! -f "$SKILL/SKILL.md" ]]; then
+            echo "::error::No skill directory '$SKILL' in this repository."
+            exit 1
+          fi
+
+          ACTUAL="$(python tools/package_skill.py --src "$SKILL" --print-version)"
+          if [[ "$ACTUAL" != "$VERSION" ]]; then
+            echo "::error::Tag version '$VERSION' does not match SKILL.md version '$ACTUAL'."
+            echo "Bump metadata.version and CHANGELOG.md, or tag the correct version."
+            exit 1
+          fi
+
+          echo "skill=$SKILL" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Resolved skill=$SKILL version=$VERSION"
+
+      - name: Validate skill
+        run: python tools/package_skill.py --src "${{ steps.meta.outputs.skill }}" --check-only
+
+      - name: Build packages
+        run: |
+          set -euo pipefail
+          python tools/package_skill.py \
+            --src "${{ steps.meta.outputs.skill }}" \
+            --out "$RUNNER_TEMP/dist"
+          cd "$RUNNER_TEMP/dist"
+          zip -qr "${{ steps.meta.outputs.skill }}-${{ steps.meta.outputs.version }}-codex-plugin.zip" codex-plugin
+          ls -l
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          name: "${{ steps.meta.outputs.skill }} ${{ steps.meta.outputs.version }}"
+          generate_release_notes: true
+          files: |
+            ${{ runner.temp }}/dist/*.skill
+            ${{ runner.temp }}/dist/*.zip
+          fail_on_unmatched_files: true
